@@ -253,6 +253,11 @@ const App = () => {
 			});
 	};
 
+	//Get next season
+	const getNextSeason = async (seriesId, seasonNumber) => {
+		await getSeasonEpisodes(seriesId, seasonNumber);
+	}
+
 	//If token not set yet, then show login/register page
     if (token.length == 0 || token.token == '') {
 		return (
@@ -277,7 +282,7 @@ const App = () => {
 					<WatchList watchList={watchList} getEpisodes={getEpisodes} removeSeries={removeSeries} />
 				</div>
 				<div className='row'>
-					<EpisodeList episodeList={episodeList} watchedEpisode={watchedEpisode} />
+					<EpisodeList episodeList={episodeList} watchedEpisode={watchedEpisode} getNextSeason={getNextSeason} />
 				</div>
 			</div>
 		</>
