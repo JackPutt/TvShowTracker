@@ -17,8 +17,7 @@ const EpisodeList = (props) => {
 							<div className='watched d-flex align-items-center justify-content-center'><span>Watched</span></div>
 						): (
 								<div className='overlay d-flex align-items-center justify-content-center' onClick={() => props.watchedEpisode(episode)}><span>Mark as watched</span></div>
-						)
-}
+						)}
 					</div>
 
 					)}

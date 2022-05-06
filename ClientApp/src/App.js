@@ -7,6 +7,7 @@ import SeriesList from './components/SeriesList';
 import Search from './components/Search';
 import WatchList from './components/WatchList';
 import EpisodeList from './components/EpisodeList';
+import Loading from './components/Loading';
 
 const App = () => {
 	const [token, setToken] = useState([]);
@@ -14,6 +15,7 @@ const App = () => {
 	const [watchList, setWatchList] = useState([]);
 	const [episodeList, setEpisodeList] = useState([]);
 	const [searchValue, setSearchValue] = useState('');
+	const [isLoading, setIsLoading] = useState(false);
 
 	//Login/Register functions
 	const loginSubmit = async () => {
@@ -25,6 +27,7 @@ const App = () => {
 	}
 	const performLogin = async (username, pwd) => {
 		//Login in using api/login endpoint
+		setIsLoading(true);
 		await fetch('https://localhost:7263/api/login', {
 			method: "post",
 			headers: { 'Content-Type': 'application/json' },
@@ -43,9 +46,13 @@ const App = () => {
 			})
 			.catch(function (error) {
 				console.log("Error: ", error);
+			})
+			.finally(function () {
+			setIsLoading(false);
 			});
 	};
 	const register = async () => {
+		setIsLoading(true);
 		var { uname, email, pass } = document.forms[1];
 
 		//Login in using api/login endpoint
@@ -63,14 +70,18 @@ const App = () => {
 			})
 			.then(function () {
 				performLogin(uname.value, pass.value);
-            })
+			})
 			.catch(function (error) {
 				console.log("Error: ", error);
-			});
+			})
+			.finally(function () {
+				setIsLoading(false);
+            });
 	}
 
 	//Get series from IMDB
 	const getSeriesFromIMDB = async (searchValue) => {
+		setIsLoading(true);
 		var url = `https://imdb-api.com/en/api/SearchSeries/k_01g497fb`;
 		if (searchValue != null && searchValue.length > 0) {
 			url += "/" + searchValue;
@@ -87,6 +98,9 @@ const App = () => {
 			})
 			.catch(function (error) {
 				console.log("Error: ", error);
+			})
+			.finally(function () {
+				setIsLoading(false);
 			});
 	};
 	const search = async () => {
@@ -96,6 +110,7 @@ const App = () => {
 
 	//Add to watch list functions
 	const addToWatchList = async (series) => {
+		setIsLoading(true);
 		await fetch('https://localhost:7263/api/series/', {
 			method: "post",
 			headers: {
@@ -120,6 +135,9 @@ const App = () => {
 			})
 			.catch(function (error) {
 				console.log("Error: ", error);
+			})
+			.finally(function () {
+				setIsLoading(false);
 			});
 	}
 	const addEpisodes = async (seriesId, seasonNumber) => {
@@ -147,6 +165,7 @@ const App = () => {
 			});
 	};
 	const getSeasonEpisodes = async (seriesId, seasonNumber) => {
+		setIsLoading(true);
 		await fetch('https://imdb-api.com/en/api/SeasonEpisodes/k_01g497fb/' + seriesId + '/' + seasonNumber)
 			.then(function (response) {
 				if (response.ok) {
@@ -166,9 +185,13 @@ const App = () => {
 			})
 			.catch(function (error) {
 				console.log("Error: ", error);
-			});
+			})
+			.finally(function () {
+				setIsLoading(false);
+            })
 	};
 	const getEpisodes = async (seriesID) => {
+		setIsLoading(true);
 		await fetch('https://localhost:7263/api/episodes/' + seriesID + '/' + token.userId, {
 			method: "get",
 			headers: {
@@ -188,9 +211,13 @@ const App = () => {
 			})
 			.catch(function (error) {
 				console.log("Error: ", error);
+			})
+			.finally(function () {
+				setIsLoading(false);
 			});
 	};
 	const getUsersWatchList = async (token, userId) => {
+		setIsLoading(true);
 		await fetch('https://localhost:7263/api/series/' + userId, {
 			method: "get",
 			headers: {
@@ -209,11 +236,15 @@ const App = () => {
 			})
 			.catch(function (error) {
 				console.log("Error: ", error);
+			})
+			.finally(function () {
+				setIsLoading(false);
 			});
 	};
 
 	//Remove from watch list
 	const removeSeries = async (seriesId) => {
+		setIsLoading(true);
 		await fetch('https://localhost:7263/api/series/' + token.userId + '/' + seriesId, {
 			method: "delete",
 			headers: {
@@ -229,7 +260,10 @@ const App = () => {
 			})
 			.catch(function (error) {
 				console.log("Error: ", error);
-			});
+			})
+			.finally(function () {
+				setIsLoading(false);
+            })
 	}
 
 	//Set whether an episode has been watched
@@ -262,6 +296,7 @@ const App = () => {
     if (token.length == 0 || token.token == '') {
 		return (
 			<>
+				<Loading isLoading={isLoading} />
 				<Login loginSubmit={loginSubmit} />
 				<div className="separator"></div>
 					<Register register={register} />
@@ -270,7 +305,8 @@ const App = () => {
     }
 
     return (
-        <>
+		<>
+			<Loading isLoading={isLoading}/>
 			<div className='container-fluid'>
 				<div className='row'>
 					<h2>Search IMDB</h2>

@@ -162,3 +162,13 @@ input[type="submit"] {
         text-decoration: none;
         font-weight: bold;
     }
+
+    .loading{
+        position:fixed;
+        top: 40%;
+        left:46%;
+        z-index:1000;
+    }
+    .loading-icon{
+        width:50%
+    }
