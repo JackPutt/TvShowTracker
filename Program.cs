@@ -7,19 +7,23 @@ using TvShowTracker.Data;
 using TvShowTracker.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-// Add services to the container.
+
+//Get connection string
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+//Config DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options
     .UseSqlServer(connectionString)
     .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()))
     .EnableSensitiveDataLogging());
 
+//Config Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-
+//Config JWT settings
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -39,20 +43,26 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+//Handle CORs given the client app runs on a different localhost
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: "CorsPolicy", policy =>
     {
-        policy.WithOrigins("https://localhost:44487", "http://localhost:57755", "https://localhost:7263", "http://localhost:5263")
+        policy.WithOrigins("https://localhost:44410")
         .AllowAnyMethod()
         .AllowAnyHeader();
     });
 });
+
+builder.Services.AddControllers();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
 }
 
 app.UseHttpsRedirection();

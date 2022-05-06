@@ -16,7 +16,7 @@ namespace TvShowTracker.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-
+            //Define composite constraints
             builder.Entity<Series>().HasKey(pk => new { pk.SeriesID, pk.UserID });
             builder.Entity<Episode>().HasKey(pk => new { pk.EpisodeID, pk.SeriesID, pk.UserID });
         }
