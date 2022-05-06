@@ -48,7 +48,7 @@ const App = () => {
 				console.log("Error: ", error);
 			})
 			.finally(function () {
-			setIsLoading(false);
+				setIsLoading(false);
 			});
 	};
 	const register = async () => {
@@ -297,7 +297,7 @@ const App = () => {
 		return (
 			<>
 				<Loading isLoading={isLoading} />
-				<Login loginSubmit={loginSubmit} />
+				<Login loginSubmit={loginSubmit}/>
 				<div className="separator"></div>
 					<Register register={register} />
 			</>
