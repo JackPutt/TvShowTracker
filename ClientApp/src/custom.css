@@ -12,3 +12,48 @@ code {
   background-color: #1b6ec2;
   border-color: #1861ac;
 }
+input[type="text"],
+input[type="password"] {
+    height: 25px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+input[type="submit"] {
+    margin-top: 10px;
+    cursor: pointer;
+    font-size: 15px;
+    background: #01d28e;
+    border: 1px solid #01d28e;
+    color: #fff;
+    padding: 10px 20px;
+}
+
+    input[type="submit"]:hover {
+        background: #6cf0c2;
+    }
+
+.button-container {
+    display: flex;
+    justify-content: center;
+}
+
+.form {
+    background-color: white;
+    padding: 2rem;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    text-align: center;
+    width: 80%;
+    margin: 5% 10% 5% 10%;
+    display: inline-block;
+}
+.form label{
+    text-align:left;
+}
+.separator {
+    text-align: center;
+    margin: 1rem;
+    border: 1px solid #797979;
+}
+.w-100{
+    width:100%;
+}
