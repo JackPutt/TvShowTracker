@@ -5,15 +5,17 @@ import Login from './components/Login';
 import Register from './components/Register';
 import SeriesList from './components/SeriesList';
 import Search from './components/Search';
+import WatchList from './components/WatchList';
+import EpisodeList from './components/EpisodeList';
 
 const App = () => {
 	const [token, setToken] = useState([]);
 	const [seriesList, setSeriesList] = useState([]);
+	const [watchList, setWatchList] = useState([]);
+	const [episodeList, setEpisodeList] = useState([]);
 	const [searchValue, setSearchValue] = useState('');
 
-	/*
-	 * #Login/Register functiosn
-	 */
+	//Login/Register functions
 	const loginSubmit = async () => {
 		//Grab values from login form
 		var { uname, pass } = document.forms[0];
@@ -86,10 +88,146 @@ const App = () => {
 				console.log("Error: ", error);
 			});
 	};
-
 	const search = async () => {
 		console.log(searchValue);
 		await getSeriesFromIMDB(searchValue);
+	}
+
+	//Add to watch list functions
+	const addToWatchList = async (series) => {
+		await fetch('https://localhost:7263/api/series/', {
+			method: "post",
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': 'Bearer ' + token.token
+			},
+			body: '{ "SeriesID": "' + series.id + '", "UserID": "' + token.userId + '", "SeriesTitle":"' + series.title + '", "SeriesDescription":"' + series.description + '","SeriesImage":"' + series.image + '" }'
+		})
+			.then(function (response) {
+				if (response.ok) {
+					return response.json()
+				}
+				throw new Error(response.statusText);
+			})
+			.then(function () {
+				//Save season 1 - no IMDB endpoint to determine number of seasons
+				addEpisodes(series.id, 1);
+			})
+			.then(function () {
+				//Pull list of series added to users watch list
+				getUsersWatchList(token.token, token.userId);
+			})
+			.catch(function (error) {
+				console.log("Error: ", error);
+			});
+	}
+	const addEpisodes = async (seriesId, seasonNumber) => {
+		//Get all episodes for given season
+		await getSeasonEpisodes(seriesId, seasonNumber)
+	};
+	const addEpisode = async (seriesId, episode) => {
+		await fetch('https://localhost:7263/api/episode/', {
+			method: "post",
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': 'Bearer ' + token.token
+			},
+			body: '{ "EpisodeID":"' + episode.id + '","SeriesID": "' + seriesId + '","UserID": "' + token.userId + '","EpisodeTitle": "' + episode.title + '","SeasonNumber": ' + episode.seasonNumber + ',"EpisodeImage": "' + episode.image + '","EpisodeNumber": ' + episode.episodeNumber + ',"Watched":false}'
+		})
+			.then(function (response) {
+				if (response.ok) {
+					console.log(response.json());
+					return response.json()
+				}
+				throw new Error(response.statusText);
+			})
+			.catch(function (error) {
+				console.log("Error: ", error);
+			});
+	};
+	const getSeasonEpisodes = async (seriesId, seasonNumber) => {
+		await fetch('https://imdb-api.com/en/api/SeasonEpisodes/k_01g497fb/' + seriesId + '/' + seasonNumber)
+			.then(function (response) {
+				if (response.ok) {
+					return response.json()
+				}
+				throw new Error(response.statusText);
+			})
+			.then(function (data) {
+				//loop through episodes and add to users watch list
+				data.episodes.map(episode => {
+					addEpisode(seriesId, episode);
+				});
+			})
+			.then(function () {
+				//get the episodes
+				getEpisodes(seriesId);
+			})
+			.catch(function (error) {
+				console.log("Error: ", error);
+			});
+	};
+	const getEpisodes = async (seriesID) => {
+		await fetch('https://localhost:7263/api/episodes/' + seriesID + '/' + token.userId, {
+			method: "get",
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': 'Bearer ' + token.token
+			}
+		})
+			.then(function (response) {
+				if (response.ok) {
+					return response.json()
+				}
+				throw new Error(response.statusText);
+			})
+			.then(function (data) {
+				setEpisodeList(data);
+			})
+			.catch(function (error) {
+				console.log("Error: ", error);
+			});
+	};
+	const getUsersWatchList = async (token, userId) => {
+		await fetch('https://localhost:7263/api/series/' + userId, {
+			method: "get",
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': 'Bearer ' + token
+			}
+		})
+			.then(function (response) {
+				if (response.ok) {
+					return response.json();
+				}
+				throw new Error(response.statusText);
+			})
+			.then(function (data) {
+				setWatchList(data);
+			})
+			.catch(function (error) {
+				console.log("Error: ", error);
+			});
+	};
+
+	//Remove from watch list
+	const removeSeries = async (seriesId) => {
+		await fetch('https://localhost:7263/api/series/' + token.userId + '/' + seriesId, {
+			method: "delete",
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': 'Bearer ' + token.token
+			}
+		})
+			.then(function (response) {
+				if (response.ok) {
+					getUsersWatchList(token.token, token.userId);
+				}
+				throw new Error(response.statusText);
+			})
+			.catch(function (error) {
+				console.log("Error: ", error);
+			});
 	}
 
 	//If token not set yet, then show login/register page
@@ -110,7 +248,13 @@ const App = () => {
 					<h2>Search IMDB</h2>
 					<Search searchValue={searchValue} setSearchValue={setSearchValue} search={search} />
 
-					<SeriesList seriesList={seriesList} />
+					<SeriesList seriesList={seriesList} addToWatchList={addToWatchList} />
+				</div>
+				<div className='row'>
+					<WatchList watchList={watchList} getEpisodes={getEpisodes} removeSeries={removeSeries} />
+				</div>
+				<div className='row'>
+				<EpisodeList episodeList={episodeList} />
 				</div>
 			</div>
 		</>
