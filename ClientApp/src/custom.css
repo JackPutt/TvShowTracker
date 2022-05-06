@@ -1,4 +1,8 @@
 /* Provide sufficient contrast against white background */
+body {
+    background-color: #272937;
+    color:#ffffff;
+}
 a {
   color: #0366d6;
 }
@@ -26,6 +30,7 @@ input[type="submit"] {
     border: 1px solid #01d28e;
     color: #fff;
     padding: 10px 20px;
+    border-radius:5px;
 }
 
     input[type="submit"]:hover {
@@ -45,6 +50,8 @@ input[type="submit"] {
     width: 80%;
     margin: 5% 10% 5% 10%;
     display: inline-block;
+    border-radius:5px;
+    color:#272937;
 }
 .form label{
     text-align:left;
@@ -57,3 +64,67 @@ input[type="submit"] {
 .w-100{
     width:100%;
 }
+.row{
+    margin:1rem;
+}
+.series-container {
+    display: block;
+    min-height: 200px;
+    width: 100%;
+    margin-top: 1rem;
+    border: 1px solid #2f2f30;
+    background-color: #3e4048;
+    border-radius: 5px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding: 1rem;
+    margin: 10px;
+}
+
+.series {
+    position: relative;
+    transition: transform 0.2s;
+    width: 200px;
+    display: inline-block;
+    text-align: center;
+}
+
+    .series:hover {
+        cursor: pointer;
+        transform: scale(1.1);
+    }
+.series-img {
+    width: 100%;
+    max-height: 275px;
+}
+    .series:hover .overlay {
+        opacity: 1;
+    }
+
+.overlay {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    width: 100%;
+    transition: 0.5s ease;
+    opacity: 0;
+    top: 0;
+    font-size: 14px;
+    padding: 5px;
+    text-align: center;
+    height: 100%;
+}
+
+    .overlay span {
+        color: #ffffff;
+        text-decoration: none;
+    }
+.link {
+    text-decoration: none;
+    color: #ffffff;
+}
+
+    .link:hover {
+        color: #ffffff;
+        text-decoration: none;
+        font-weight: bold;
+    }
