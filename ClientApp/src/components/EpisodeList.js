@@ -10,15 +10,12 @@ const EpisodeList = (props) => {
 					<div className='series m-3' key={i}>
 						<img className='series-img' src={episode.episodeImage} alt='episode' title={episode.episodeTitle}></img>
 						<span>S{episode.seasonNumber} E{episode.episodeNumber}. {episode.episodeTitle}</span>
-						<div className='overlay d-flex align-items-center justify-content-center'>
-							{episode.watched &&
-								<span>Watched</span>
-							}
-							{!episode.watched &&
-								<span>Not watched</span>
-							}
-
-						</div>
+						{episode.watched ? (
+							<div className='watched d-flex align-items-center justify-content-center'><span>Watched</span></div>
+						): (
+								<div className='overlay d-flex align-items-center justify-content-center' onClick={() => props.watchedEpisode(episode)}><span>Mark as watched</span></div>
+						)
+}
 					</div>
 
 					)}

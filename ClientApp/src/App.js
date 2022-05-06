@@ -39,6 +39,7 @@ const App = () => {
 			})
 			.then(function (data) {
 				setToken(data);
+				getUsersWatchList(data.token, data.userId);
 			})
 			.catch(function (error) {
 				console.log("Error: ", error);
@@ -182,6 +183,7 @@ const App = () => {
 				throw new Error(response.statusText);
 			})
 			.then(function (data) {
+				console.log(data);
 				setEpisodeList(data);
 			})
 			.catch(function (error) {
@@ -230,6 +232,27 @@ const App = () => {
 			});
 	}
 
+	//Set whether an episode has been watched
+	const watchedEpisode = async (episode) => {
+		await fetch('https://localhost:7263/api/watchedepisode/', {
+			method: "post",
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': 'Bearer ' + token.token
+			},
+			body: '{ "EpisodeID":"' + episode.episodeID + '","SeriesID": "' + episode.seriesID + '","UserID": "' + token.userId + '","EpisodeTitle": "' + episode.episodeTitle + '","SeasonNumber": ' + episode.seasonNumber + ',"EpisodeImage": "' + episode.episodeImage + '","EpisodeNumber": ' + episode.episodeNumber + ',"Watched":true}'
+		})
+			.then(function (response) {
+				if (response.ok) {
+					getEpisodes(episode.seriesID);
+				}
+				throw new Error(response.statusText);
+			})
+			.catch(function (error) {
+				console.log("Error: ", error);
+			});
+	};
+
 	//If token not set yet, then show login/register page
     if (token.length == 0 || token.token == '') {
 		return (
@@ -254,7 +277,7 @@ const App = () => {
 					<WatchList watchList={watchList} getEpisodes={getEpisodes} removeSeries={removeSeries} />
 				</div>
 				<div className='row'>
-				<EpisodeList episodeList={episodeList} />
+					<EpisodeList episodeList={episodeList} watchedEpisode={watchedEpisode} />
 				</div>
 			</div>
 		</>

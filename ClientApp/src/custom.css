@@ -118,6 +118,18 @@ input[type="submit"] {
         color: #ffffff;
         text-decoration: none;
     }
+.watched {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    width: 100%;
+    transition: 0.5s ease;
+    opacity: 1;
+    top: 0;
+    font-size: 14px;
+    padding: 5px;
+    text-align: center;
+    height: 100%;
+}
 .link {
     text-decoration: none;
     color: #ffffff;
